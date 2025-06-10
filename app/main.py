@@ -28,18 +28,24 @@ async def generateManim(request: Request):
     response =  client.models.generate_content(
             model="gemini-2.0-flash",
             contents=f"""
-                        You are an expert at using Manim (Mathematical Animation Engine). Your task is to generate highly accurate, syntactically valid Manim code in Python that creates a clear, animated explanation of the concept described after the --- separator.
-                        The code should:
-                        Use the latest Manim Community Edition (manimCE) syntax.
-                        Include appropriate scenes, labels, transformations, and animations to effectively visualize and explain the concept.
-                        Be structured, readable, and ready to run directly in a manim script.
-                        Highlight key ideas, definitions, and transitions to improve understanding.
-                        Avoid placeholder code unless absolutely necessary.
-                        Output only the code — no commentary or explanation. 
-                        --- 
-                        {concept}""",
-        )
-    with open("test.py", "w") as f:
-        f.write(response.text)
+                        You are an expert in Manim (Mathematical Animation Engine). You are an expert at using Manim (Mathematical Animation Engine). Your task is to generate highly accurate, syntactically valid Manim code in Python that creates a clear, animated explanation of the concept described after the --- separator. Generate fully valid, executable Python code for a Manim animation based strictly on the official documentation: https://docs.manim.community
 
-    return JSONResponse(status_code=200, content=response.text)
+                        Strict Instructions:
+                        - Start with `from manim import *`.
+                        - Define a class named `Animation` inheriting from a Scene subclass (e.g., `Scene`, `MovingCameraScene`, etc.).
+                        - Python code can contain explanations, if specified by user (as part of the animation itself, but should be non intrusive and non-overlapping)
+                        - Implement a `construct(self)` method with complete animation logic.
+                        - Do NOT include comments, markdown, or text outside the code.
+                        - Do NOT use `.rotate()` on NumPy arrays like `UP`, `DOWN`, or results from `.get_center()`. Use `rotate_vector(vec, angle)` instead.
+                        - Do NOT assume external files, media, or SVGs. Use only Manim primitives.
+                        - The output must be completely self-contained, error-free, and ready to run.
+
+                        Return **only the Python code**. No explanations, no markdown, no prose.
+
+                        ---
+                        {concept}""",
+        ).text
+    with open("test.py", "w") as f:
+        f.write(response)
+
+    return JSONResponse(status_code=200, content=response)

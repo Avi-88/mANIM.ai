@@ -4,3 +4,5 @@ __pycache__/
 uv.lock
 .env
 test.py
+media/
+.cache
